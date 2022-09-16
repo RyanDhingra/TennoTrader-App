@@ -1,25 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, Text, SafeAreaView, View, TouchableOpacity } from 'react-native';
 import bg from '../assets/WFwallpaper.jpg'
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
-function Login({ navigation }) {
+function Homepage({ navigation }) {
+
     let [fontsLoaded] = useFonts({
         'WFfont': require('../assets/fonts/WarframeFont.ttf')
     });
+    
     if (!fontsLoaded) {
         return (
             <AppLoading/>
         )
-    }
-
-    const handleLogin = () => {
-        console.log('login')
-    }
-
-    const handleSettings = () => {
-        console.log('settings')
     }
 
     return (
@@ -30,14 +24,11 @@ function Login({ navigation }) {
                 </Text>
             </SafeAreaView>
             <View style={styles.top}></View>
-            <TouchableOpacity onPress={() => navigation.navigate('Search')} style={styles.login}>
+            <TouchableOpacity onPress={() => navigation.navigate('Search', {
+                clear: 0
+            })} style={styles.start}>
                     <Text style={styles.buttonText}>
-                        Login
-                    </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSettings} style={styles.settings}>
-                    <Text style={styles.buttonText}>
-                        Settings
+                        Start Trading
                     </Text>
             </TouchableOpacity>
             <View style={styles.bottom}></View>
@@ -57,7 +48,7 @@ const styles = StyleSheet.create({
         fontFamily: 'WFfont',
         fontSize: '50px'
     },
-    settings: {
+    start: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
@@ -65,15 +56,6 @@ const styles = StyleSheet.create({
         bottom: 40,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    login: {
-        position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 0, .5)',
-        height: 100,
-        width: '100%',
-        bottom: 140,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     buttonText: {
         position: 'relative',
@@ -93,10 +75,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 40,
         width: '100%',
-        bottom: 240,
+        bottom: 140,
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     }
 })
 
-export default Login;
+export default Homepage;
