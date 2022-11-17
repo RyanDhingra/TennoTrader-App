@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import bg from '../assets/WFwallpaper.jpg'
-import { FlatList, StyleSheet, ImageBackground, SafeAreaView, Text, Alert, TouchableOpacity, View } from 'react-native';
+import ArrowLeft from '../assets/ArrowLeft.png';
+import ArrowRight from '../assets/ArrowRight.png';
+import { FlatList, StyleSheet, ImageBackground, SafeAreaView, Text, Alert, TouchableOpacity, View, Image, TextInput } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { useState } from 'react';
 import { AsyncStorage } from 'react-native';
@@ -15,13 +17,17 @@ export const getCookie = async () => {
     return AsyncStorage.getItem('ITEMS')
 };
 
+
 function Search({ route, navigation }) {
+
     const [searchTerm, setSearchTerm] = useState("");
     const [data, setData] = useState([]);
     const [itemNames, setItemNames] = useState([]);
     const [watchlist, setWatchlist] = useState([]);
     const [itemClicked, setItemClicked] = useState(false);
     const [item, setItem] = useState(false);
+    const [plat, setPlat] = useState(1);
+    const [check, setCheck] = useState(false);
 
     useEffect(() => {
         const { clear } = route.params;
@@ -113,17 +119,39 @@ function Search({ route, navigation }) {
     const addToWatchlist = () => {
         setItemClicked(true);
 
+        const names = []
+
+        for (const item of watchlist) {
+            names.push(item.itemName)
+        }
+
         if (watchlist.length < 5) {
-            if (watchlist.includes(item)) {
+            if (names.includes(item)) {
                 Alert.alert("Item Already Being Watched", "This item has already been added to your watchlist.", [
                     {text: "Ok"}
                 ])
+                setCheck(false)
+                setItemClicked(false)
             } else {
                 const newWatchlist = []
                 for (let x = 0; x < watchlist.length; x++) {
                     newWatchlist.push(watchlist[x])
                 }
-                newWatchlist.push(item)
+
+                let itemInfo = null;
+
+                if (plat >= 1) {
+                    itemInfo = {
+                        itemName: item,
+                        itemPrice: plat
+                    }
+                } else {
+                    itemInfo = {
+                        itemName: item,
+                        itemPrice: 1
+                    }
+                }
+                newWatchlist.push(itemInfo)
                 setWatchlist(newWatchlist)
                 setItemClicked(false);
                 setItem(null);
@@ -135,6 +163,28 @@ function Search({ route, navigation }) {
         }
     }
 
+    const incPlat = () => {
+        setPlat(plat + 1)
+    }
+
+    const decPlat = () => {
+        if (plat > 1) {
+            setPlat(plat - 1)
+        } else {
+            setPlat(1)
+        }
+    }
+
+
+    const checkPlat = (newNum) => {
+        setPlat(Number(newNum))
+    }
+
+    const cancel = () => {
+        setPlat(1)
+        setItemClicked(false)
+    }
+
     return (
         <ImageBackground source={bg} style={styles.bg}>
             <SafeAreaView alignItems= 'center' width='100%' height='100%'>
@@ -142,12 +192,12 @@ function Search({ route, navigation }) {
                     <SearchBar 
                         value={searchTerm}
                         onChangeText={updateSearch}
-                        placeholder="Search for an item..."
+                        placeholder="Search items here"
                         inputContainerStyle={{backgroundColor: 'rgba(0, 0, 0, 0)', color:'white'}}
                         containerStyle={{backgroundColor: '#66D0E8', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}}
                         inputStyle={{color: 'white', margin: 0, color:'white', fontSize: 25, fontFamily: 'WFfont'}}
-                        searchIcon={{color:'white', size: 25}}
-                        clearIcon={{color:'white', size: 20}}
+                        searchIcon={{color:'white', size: 30}}
+                        clearIcon={{color:'white', size: 30}}
                         placeholderTextColor='white'
                         onSubmitEditing={sortData}
                     />
@@ -184,7 +234,7 @@ function Search({ route, navigation }) {
                 <Text>
                     Set Watch Price
                 </Text>
-                <TouchableOpacity onPress={() => setItemClicked(false)}>
+                <TouchableOpacity onPress={() => cancel()}>
                     <Text>
                         Cancel
                     </Text>
@@ -194,6 +244,17 @@ function Search({ route, navigation }) {
                         Add To Watchlist
                     </Text>
                 </TouchableOpacity>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <TouchableOpacity onPress={() => decPlat()}>
+                        <Image source={ArrowLeft} style={{width: 30, height: 30}}/>
+                    </TouchableOpacity>
+                    <TextInput keyboardType='numeric' defaultValue={plat ? plat: 1} onChangeText={num => checkPlat(num)} maxLength={4} style={{width: 40, textAlign: 'center'}} >
+                        {plat}
+                    </TextInput>
+                    <TouchableOpacity onPress={() => incPlat()}>
+                        <Image source={ArrowRight} style={{width: 30, height: 30}}/>
+                    </TouchableOpacity>
+                </View>
             </View>
         </ImageBackground>
     );

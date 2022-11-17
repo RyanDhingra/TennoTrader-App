@@ -6,7 +6,10 @@ import AppLoading from 'expo-app-loading';
 
 function Homepage({ navigation }) {
 
-    let [fontsLoaded] = useFonts({
+    const [fontsLoaded] = useFonts({
+        Ionicons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+        MaterialIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
+        'Material Icons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
         'WFfont': require('../assets/fonts/WarframeFont.ttf')
     });
     

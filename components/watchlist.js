@@ -52,12 +52,27 @@ function Watchlist({ navigation }) {
         checkStatusAsync();
     };
 
+    const runFirstTask = async () => {
+        try {
+            const res = await fetch('https://api.warframe.market/v1/items/chroma_prime_systems/orders', 
+            {
+                mode: 'no-cors'
+            }
+            );
+            const json = await res.json();
+            console.log(json)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         getCookie().then(req => setWatchlist(JSON.parse(req)))
         toggleFetchTask()
         Alert.alert("Tracking has begun!", "Your items are now being tracked. NOTE: Your phone must be unlocked for tracking, and the app must only be running in the BACKGROUND. Good luck Tenno!", [
             {text: "Ok"}
         ])
+        runFirstTask()
     }, [])
 
     const resetStorage = () => {
@@ -85,26 +100,27 @@ function Watchlist({ navigation }) {
                         showsVerticalScrollIndicator={false}
                         renderItem={({item}) =>
                         <View style={styles.flatview}>
-                                <Text style={styles.name}>{item}</Text>
+                            <Text style={styles.name}>{item.itemName}</Text>
+                            <Text style={styles.name}>{item.itemPrice}</Text>
                         </View>
                         }
-                        keyExtractor={item => item}
+                        keyExtractor={item => item.itemName}
                     />
                 </View>
             </SafeAreaView>
             <View style={styles.top}></View>
-            <TouchableOpacity onPress={() => resetStorage()} style={styles.clearWatchlist}>
-                    <Text style={styles.buttonText}>
-                        Clear Watchlist
-                    </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Search', {
-                clear: 0
-            })} style={styles.back}>
-                    <Text style={styles.buttonText}>
-                        Back To Search
-                    </Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => resetStorage()} style={styles.clearWatchlist}>
+                        <Text style={styles.buttonText}>
+                            Clear Watchlist
+                        </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Search', {
+                    clear: 0
+                })} style={styles.back}>
+                        <Text style={styles.buttonText}>
+                            Back To Search
+                        </Text>
+                </TouchableOpacity>
             <View style={styles.bottom}></View>
         </ImageBackground>
         
@@ -159,6 +175,10 @@ const styles = StyleSheet.create({
     flatview: {
         justifyContent: 'center',
         borderRadius: 0,
+        paddingTop: 5,
+        //paddingLeft: 30,
+        //paddingRight: 30,
+        alignItems: "center",
     },
     name: {
         fontFamily: 'Verdana',
