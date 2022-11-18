@@ -27,7 +27,6 @@ function Search({ route, navigation }) {
     const [itemClicked, setItemClicked] = useState(false);
     const [item, setItem] = useState(false);
     const [plat, setPlat] = useState(1);
-    const [check, setCheck] = useState(false);
 
     useEffect(() => {
         const { clear } = route.params;
@@ -130,7 +129,6 @@ function Search({ route, navigation }) {
                 Alert.alert("Item Already Being Watched", "This item has already been added to your watchlist.", [
                     {text: "Ok"}
                 ])
-                setCheck(false)
                 setItemClicked(false)
             } else {
                 const newWatchlist = []
@@ -164,11 +162,13 @@ function Search({ route, navigation }) {
     }
 
     const incPlat = () => {
-        setPlat(plat + 1)
+        if (plat < 999) {
+            setPlat(plat + 1)
+        }
     }
 
     const decPlat = () => {
-        if (plat > 1) {
+        if (plat >= 2) {
             setPlat(plat - 1)
         } else {
             setPlat(1)
@@ -177,7 +177,12 @@ function Search({ route, navigation }) {
 
 
     const checkPlat = (newNum) => {
-        setPlat(Number(newNum))
+        Alert.alert('check plat called')
+        if (newNum > 1) {
+            setPlat(Number(newNum))
+        } else {
+            setPlat(1)
+        }
     }
 
     const cancel = () => {
@@ -187,35 +192,36 @@ function Search({ route, navigation }) {
 
     return (
         <ImageBackground source={bg} style={styles.bg}>
-            <SafeAreaView alignItems= 'center' width='100%' height='100%'>
+            <SafeAreaView alignItems='center' width='100%' height='100%' style={itemClicked ? {backgroundColor: 'rgba(0, 0, 0, 0.5)'}:null}>
                 <View style={styles.searchBar}>
                     <SearchBar 
                         value={searchTerm}
                         onChangeText={updateSearch}
                         placeholder="Search items here"
                         inputContainerStyle={{backgroundColor: 'rgba(0, 0, 0, 0)', color:'white'}}
-                        containerStyle={{backgroundColor: '#66D0E8', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}}
-                        inputStyle={{color: 'white', margin: 0, color:'white', fontSize: 25, fontFamily: 'WFfont'}}
-                        searchIcon={{color:'white', size: 30}}
-                        clearIcon={{color:'white', size: 30}}
-                        placeholderTextColor='white'
+                        containerStyle={itemClicked ? {backgroundColor: 'rgba(102, 208, 232, 0.2)', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}:{backgroundColor: '#66D0E8', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}}
+                        inputStyle={itemClicked ? {color: 'rgba(255, 255, 255, 0.2)', margin: 0, fontSize: 25, fontFamily: 'WFfont'}:{color: 'white', margin: 0, color:'white', fontSize: 25, fontFamily: 'WFfont'}}
+                        searchIcon={itemClicked ? {color:'rgba(255, 255, 255, 0.2)', size: 30}:{color:'white', size: 30}}
+                        clearIcon={itemClicked ? {color:'rgba(255, 255, 255, 0.2)', size: 30}:{color:'white', size: 30}}
+                        placeholderTextColor={itemClicked ? 'rgba(255, 255, 255, 0.2)':'white'}
                         onSubmitEditing={sortData}
                     />
                 </View>
                 <View height="65%" width="70%">
                     <FlatList
-                        backgroundColor='#66D0E8'
+                        backgroundColor={itemClicked ? 'rgba(102, 208, 232, 0.2)':'#66D0E8'}
                         borderRadius='50'
                         borderTopLeftRadius='0'
                         borderTopRightRadius='0'
                         borderWidth='1'
+                        borderTopWidth='0'
                         borderColor='black'
                         data={itemNames}
                         showsVerticalScrollIndicator={false}
                         renderItem={({item}) =>
                         <View style={styles.flatview}>
                             <TouchableOpacity onPress={() => setCurrItem(item)}>
-                                <Text style={styles.name}>{item}</Text>
+                                <Text style={itemClicked ? styles.nameBlurr: styles.name}>{item}</Text>
                             </TouchableOpacity>
                         </View>
                         }
@@ -225,36 +231,36 @@ function Search({ route, navigation }) {
             </SafeAreaView>
             <View style={styles.top}></View>
             <TouchableOpacity onPress={() => navigation.navigate('Watchlist')} style={styles.watchlist}>
-                    <Text style={styles.buttonText}>
+                    <Text style={itemClicked ? styles.buttonTextBlurr:styles.buttonText}>
                         Start Watching
                     </Text>
             </TouchableOpacity>
             <View style={styles.bottom}></View>
-            <View style={itemClicked ? styles.box: null}>
-                <Text>
-                    Set Watch Price
+            <View style={itemClicked ? styles.popup: null}>
+                <Text style={{fontSize: 25, color: 'white', marginBottom: 10,}}>
+                    Set Watch Price:
                 </Text>
-                <TouchableOpacity onPress={() => cancel()}>
-                    <Text>
-                        Cancel
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => addToWatchlist()}>
-                    <Text>
-                        Add To Watchlist
-                    </Text>
-                </TouchableOpacity>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
+                <View style={{display: 'flex', flexDirection: 'row', marginBottom: 15}}>
                     <TouchableOpacity onPress={() => decPlat()}>
                         <Image source={ArrowLeft} style={{width: 30, height: 30}}/>
                     </TouchableOpacity>
-                    <TextInput keyboardType='numeric' defaultValue={plat ? plat: 1} onChangeText={num => checkPlat(num)} maxLength={4} style={{width: 40, textAlign: 'center'}} >
-                        {plat}
+                    <TextInput keyboardType='numeric' placeholder={1} placeholderTextColor='white' onChangeText={num => checkPlat(num)} maxLength={4} style={{width: 150, textAlign: 'center', color: 'white', fontSize: 25,}} >
+                        {(plat > 1) ? plat: 1}
                     </TextInput>
                     <TouchableOpacity onPress={() => incPlat()}>
                         <Image source={ArrowRight} style={{width: 30, height: 30}}/>
                     </TouchableOpacity>
                 </View>
+                <TouchableOpacity onPress={() => addToWatchlist()} style={{borderBottomColor: 'black', borderBottomWidth: 1, borderTopColor: 'black', borderTopWidth: 1, width: '100%', alignItems: 'center'}}>
+                    <Text style={{fontSize: 25, color: 'white'}}>
+                        Add To Watchlist
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => cancel()}>
+                    <Text style={{fontSize: 25, color: 'white'}}>
+                        Cancel
+                    </Text>
+                </TouchableOpacity>
             </View>
         </ImageBackground>
     );
@@ -272,11 +278,11 @@ const styles = StyleSheet.create({
         position: 'relative',
         top: '180%',
         fontFamily: 'WFfont',
-        fontSize: '50px'
+        fontSize: 50
     },
     watchlist: {
         position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 0, .5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 100,
         width: '100%',
         bottom: 40,
@@ -289,11 +295,24 @@ const styles = StyleSheet.create({
         fontFamily: 'WFfont',
         fontSize: 40,
     },
+    buttonTextBlurr: {
+        position: 'relative',
+        color: 'rgba(255, 255, 255, 0.2)',
+        fontFamily: 'WFfont',
+        fontSize: 40,
+    },
     searchBar: {
         width: 100,
         top: 50,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    searchBarBlurr: {
+        width: 100,
+        top: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     flatview: {
         justifyContent: 'center',
@@ -310,6 +329,12 @@ const styles = StyleSheet.create({
         fontFamily: 'Verdana',
         fontSize: 20,
         color: 'white',
+        fontFamily: 'WFfont',
+    },
+    nameBlurr: {
+        fontFamily: 'Verdana',
+        fontSize: 20,
+        color: 'rgba(255, 255, 255, 0.2)',
         fontFamily: 'WFfont',
     },
     container: {
@@ -331,11 +356,16 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     },
-    box: {
+    popup: {
         position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
         top: '40%',
         width: 300,
-        height: 100,
-        backgroundColor: 'green',
+        height: 150,
+        backgroundColor: '#66D0E8',
+        borderColor: '#000000',
+        borderWidth: 1,
+        borderRadius: 25,
     }
 })
