@@ -36,16 +36,16 @@ function Search({ route, navigation }) {
     }, [route])
 
     useEffect(() => {
-        getCookie().then(req => setWatchlist(JSON.parse(req)))
+        getCookie().then(req => setWatchlist(JSON.parse(req) ? JSON.parse(req): []))
     }, [])
 
     const capitalizeNames = (items) => {
         const capitalizedNames = []
 
         for (let x = 0; x < items.length; x++) {
-            const currName = items[x]
+            const currName = items[x].name;
             const seperateWords =  currName.split(" ")
-            const newName = ""
+            var newName = ""
 
             for (let word = 0; word < seperateWords.length; word++) {
                 const firstLetter = seperateWords[word].charAt(0)
@@ -62,7 +62,6 @@ function Search({ route, navigation }) {
 
             capitalizedNames.push(newName)
         }
-
         setItemNames(capitalizedNames)
     }
 
@@ -73,7 +72,11 @@ function Search({ route, navigation }) {
                 for (let x = 0; x < data.payload.items.length; x++) {
                     const curr_name = data?.payload.items[x].item_name.toLowerCase()
                     if (curr_name.includes(searchTerm.toLowerCase())) {
-                        curr_data.push(curr_name)
+                        let newItem = {
+                            name: curr_name,
+                            urlName: data.payload.items[x].url_name,
+                        }
+                        curr_data.push(newItem)
                     }
                 }
                 capitalizeNames(curr_data)
@@ -116,12 +119,11 @@ function Search({ route, navigation }) {
     }
 
     const addToWatchlist = () => {
-        setItemClicked(true);
 
         const names = []
 
-        for (const item of watchlist) {
-            names.push(item.itemName)
+        for (const currItem of watchlist) {
+            names.push(currItem.itemName)
         }
 
         if (watchlist.length < 5) {
@@ -134,19 +136,32 @@ function Search({ route, navigation }) {
                 const newWatchlist = []
                 for (let x = 0; x < watchlist.length; x++) {
                     newWatchlist.push(watchlist[x])
+                    console.log(watchlist[x])
                 }
 
                 let itemInfo = null;
+                let itemUrl = null;
+                console.log(item)
+                for (let i = 0; i < data.payload.items.length; i++) {
+                    const tempItem = data.payload.items[i].item_name
+                    const cleanTempItem = tempItem.replace(/ /g, "");
+                    if (cleanTempItem === item.replace(/ /g, "")) {
+                        console.log(item.replace(/ /g, ""))
+                        itemUrl = data.payload.items[i].url_name;
+                    }
+                }
 
                 if (plat >= 1) {
                     itemInfo = {
                         itemName: item,
-                        itemPrice: plat
+                        itemPrice: plat,
+                        queryStr: itemUrl,
                     }
                 } else {
                     itemInfo = {
                         itemName: item,
-                        itemPrice: 1
+                        itemPrice: 1,
+                        queryStr: itemUrl,
                     }
                 }
                 newWatchlist.push(itemInfo)
@@ -162,7 +177,7 @@ function Search({ route, navigation }) {
     }
 
     const incPlat = () => {
-        if (plat < 999) {
+        if (plat < 9999) {
             setPlat(plat + 1)
         }
     }
@@ -176,13 +191,8 @@ function Search({ route, navigation }) {
     }
 
 
-    const checkPlat = (newNum) => {
-        Alert.alert('check plat called')
-        if (newNum > 1) {
-            setPlat(Number(newNum))
-        } else {
-            setPlat(1)
-        }
+    const changePlat = (newNum) => {
+        setPlat(Number(parseInt(newNum)))
     }
 
     const cancel = () => {
@@ -244,8 +254,8 @@ function Search({ route, navigation }) {
                     <TouchableOpacity onPress={() => decPlat()}>
                         <Image source={ArrowLeft} style={{width: 30, height: 30}}/>
                     </TouchableOpacity>
-                    <TextInput keyboardType='numeric' placeholder={1} placeholderTextColor='white' onChangeText={num => checkPlat(num)} maxLength={4} style={{width: 150, textAlign: 'center', color: 'white', fontSize: 25,}} >
-                        {(plat > 1) ? plat: 1}
+                    <TextInput keyboardType='numeric' placeholder='1' placeholderTextColor='white' onChangeText={num => changePlat(num)} maxLength={4} style={{width: 150, textAlign: 'center', color: 'white', fontSize: 25,}} >
+                        {(plat > 1) ? plat: ""}
                     </TextInput>
                     <TouchableOpacity onPress={() => incPlat()}>
                         <Image source={ArrowRight} style={{width: 30, height: 30}}/>

@@ -4,20 +4,43 @@ import * as TaskManager from 'expo-task-manager';
 import bg from '../assets/WFwallpaper.jpg'
 import { useEffect } from 'react';
 import { StyleSheet, Alert, SafeAreaView, FlatList, ImageBackground, View, TouchableOpacity, Text, AsyncStorage } from 'react-native';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { getCookie } from '../components/search'
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+
+
+var globalWatchlist = []
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+function changeWatchlist(newWatchlist) {
+    globalWatchlist = newWatchlist
+    //console.log("Global List: " + globalWatchlist)
+}
 
 TaskManager.defineTask('checkItemOffers', async () => {
-    try {
-        const res = await fetch('https://api.warframe.market/v1/items/chroma_prime_systems/orders', 
-        {
-            mode: 'no-cors'
+    var urlName = ""
+    for (let item of globalWatchlist) {
+        urlName = item.queryStr
+        try {
+            const res = await fetch('https://api.warframe.market/v1/items/' + urlName + '/orders', 
+            {
+                mode: 'no-cors'
+            }
+            );
+            const json = await res.json();
+            //console.log(json)
+            return json ? BackgroundFetch.BackgroundFetchResult.NewData : BackgroundFetch.BackgroundFetchResult.NoData;
+        } catch (error) {
+            return BackgroundFetch.BackgroundFetchResult.Failed;
         }
-        );
-        const json = await res.json();
-        return json ? BackgroundFetch.BackgroundFetchResult.NewData : BackgroundFetch.BackgroundFetchResult.NoData;
-    } catch (error) {
-        return BackgroundFetch.BackgroundFetchResult.Failed;
     }
 })
 
@@ -31,8 +54,72 @@ async function unregisterBackgroundFetchAsync() {
 
 function Watchlist({ navigation }) {
 
-    const [isRegistered, setIsRegistered] = React.useState(false);
-    const [watchlist, setWatchlist] = useState([])
+    const [isRegistered, setIsRegistered] = useState(false);
+    const [wtchlst, setWatchlist] = useState([])
+    const [ordersData, setOrders] = useState({})
+    const [currItem, setCurrItem] = useState(null)
+    //const [expoPushToken, setExpoPushToken] = useState('');
+    //const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    useEffect(() => {
+        registerForPushNotificationsAsync();//.then(token => setExpoPushToken(token));
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        //setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log(response);
+        });
+
+        return () => {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+        Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, []);
+
+    async function schedulePushNotification() {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "You've got mail! 📬",
+            body: 'Here is the notification body',
+            data: { data: 'goes here' },
+          },
+          trigger: { seconds: 1 },
+        });
+      }
+      
+    async function registerForPushNotificationsAsync() {
+    let token;
+    
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+    
+    return token;
+    }
+
+    useEffect(() => {
+        if (wtchlst) {
+            changeWatchlist(wtchlst)
+            runFirstTask()
+        }
+    }, [wtchlst])
 
     useEffect(() => {
         checkStatusAsync();
@@ -47,23 +134,40 @@ function Watchlist({ navigation }) {
         if (isRegistered) {
             await unregisterBackgroundFetchAsync();
         } else {
-        await registerBackgroundFetchAsync();
+            await registerBackgroundFetchAsync();
         }
         checkStatusAsync();
     };
 
-    const runFirstTask = async () => {
-        try {
-            const res = await fetch('https://api.warframe.market/v1/items/chroma_prime_systems/orders', 
-            {
-                mode: 'no-cors'
-            }
-            );
-            const json = await res.json();
-            console.log(json)
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        console.log(currItem)
+        console.log(ordersData?.payload?.orders[0])
+        for (let i = 0; i < ordersData?.payload?.orders.length; i++) {
+            //console.log(ordersData?.payload?.orders[i].platinum)
+            let x = i + 1
         }
+    }, [ordersData])
+
+    const runFirstTask = async () => {
+        for (let x = 0; x < wtchlst.length; x++) {
+            const urlName = wtchlst[x].queryStr;
+            const currName = wtchlst[x].itemName;
+            console.log(currName)
+            try {
+                const res = await fetch('https://api.warframe.market/v1/items/' + urlName +'/orders', 
+                {
+                    mode: 'no-cors'
+                }
+                );
+                const json = await res.json();
+                setOrders(json)
+                setCurrItem(currName)
+                //console.log('NEW ITEM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        //await schedulePushNotification();
     }
 
     useEffect(() => {
@@ -72,7 +176,7 @@ function Watchlist({ navigation }) {
         Alert.alert("Tracking has begun!", "Your items are now being tracked. NOTE: Your phone must be unlocked for tracking, and the app must only be running in the BACKGROUND. Good luck Tenno!", [
             {text: "Ok"}
         ])
-        runFirstTask()
+        console.log('task toggled')
     }, [])
 
     const resetStorage = () => {
@@ -96,12 +200,13 @@ function Watchlist({ navigation }) {
                         borderRadius='50'
                         borderWidth='1'
                         borderColor='black'
-                        data={watchlist}
+                        data={wtchlst}
                         showsVerticalScrollIndicator={false}
                         renderItem={({item}) =>
                         <View style={styles.flatview}>
                             <Text style={styles.name}>{item.itemName}</Text>
                             <Text style={styles.name}>{item.itemPrice}</Text>
+                            <Text style={styles.name}>{item.queryStr}</Text>
                         </View>
                         }
                         keyExtractor={item => item.itemName}
@@ -176,8 +281,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 0,
         paddingTop: 5,
-        //paddingLeft: 30,
-        //paddingRight: 30,
+        paddingLeft: 25,
+        paddingRight: 25,
         alignItems: "center",
     },
     name: {
