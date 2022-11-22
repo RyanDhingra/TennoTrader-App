@@ -55,11 +55,11 @@ async function unregisterBackgroundFetchAsync() {
 function Watchlist({ navigation }) {
 
     const [isRegistered, setIsRegistered] = useState(false);
-    const [wtchlst, setWatchlist] = useState([])
-    const [ordersData, setOrders] = useState({})
-    const [currItem, setCurrItem] = useState(null)
-    //const [expoPushToken, setExpoPushToken] = useState('');
-    //const [notification, setNotification] = useState(false);
+    const [wtchlst, setWatchlist] = useState([]);
+    const [ordersData, setOrders] = useState({});
+    const [currItem, setCurrItem] = useState(null);
+    const [usernames, setUsernames] = useState(null);
+    const [orderFound, setOrderFound] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
 
@@ -83,13 +83,14 @@ function Watchlist({ navigation }) {
     async function schedulePushNotification() {
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: "You've got mail! 📬",
-            body: 'Here is the notification body',
-            data: { data: 'goes here' },
+            title: "Order found: " + currItem.itemName,
+            body: 'There is an order available for ' + currItem.itemName + 'for ' + currItem.itemPrice + ' platinum on warframe.market.',
+            data: { data: 'No data' },
           },
           trigger: { seconds: 1 },
         });
-      }
+        setOrderFound(false);
+    }
       
     async function registerForPushNotificationsAsync() {
     let token;
@@ -117,7 +118,7 @@ function Watchlist({ navigation }) {
     useEffect(() => {
         if (wtchlst) {
             changeWatchlist(wtchlst)
-            runFirstTask()
+            runTask()
         }
     }, [wtchlst])
 
@@ -139,20 +140,35 @@ function Watchlist({ navigation }) {
         checkStatusAsync();
     };
 
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    const sendNoti = async () => {
+        await schedulePushNotification();
+        await delay(60000)
+        runTask()
+    }
+
     useEffect(() => {
-        console.log(currItem)
-        console.log(ordersData?.payload?.orders[0])
-        for (let i = 0; i < ordersData?.payload?.orders.length; i++) {
+        if (orderFound) {
+            sendNoti()
+        }
+    }, [orderFound])
+
+    useEffect(() => {
+        console.log('changed orderdata')
+        for (let i = 0; i < ordersData.payload?.orders.length; i++) {
             //console.log(ordersData?.payload?.orders[i].platinum)
-            let x = i + 1
+            const currOrder = ordersData.payload?.orders[i];
+            if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
+                setOrderFound(!orderFound);
+            }
         }
     }, [ordersData])
-
-    const runFirstTask = async () => {
+    
+    const runTask = async () => {
         for (let x = 0; x < wtchlst.length; x++) {
             const urlName = wtchlst[x].queryStr;
             const currName = wtchlst[x].itemName;
-            console.log(currName)
             try {
                 const res = await fetch('https://api.warframe.market/v1/items/' + urlName +'/orders', 
                 {
@@ -160,14 +176,13 @@ function Watchlist({ navigation }) {
                 }
                 );
                 const json = await res.json();
+                setCurrItem(wtchlst[x])
                 setOrders(json)
-                setCurrItem(currName)
                 //console.log('NEW ITEM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
             } catch (error) {
                 console.log(error)
             }
         }
-        //await schedulePushNotification();
     }
 
     useEffect(() => {
