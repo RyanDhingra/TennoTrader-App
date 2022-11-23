@@ -136,17 +136,14 @@ function Search({ route, navigation }) {
                 const newWatchlist = []
                 for (let x = 0; x < watchlist.length; x++) {
                     newWatchlist.push(watchlist[x])
-                    console.log(watchlist[x])
                 }
 
                 let itemInfo = null;
                 let itemUrl = null;
-                console.log(item)
                 for (let i = 0; i < data.payload.items.length; i++) {
                     const tempItem = data.payload.items[i].item_name
                     const cleanTempItem = tempItem.replace(/ /g, "");
                     if (cleanTempItem === item.replace(/ /g, "")) {
-                        console.log(item.replace(/ /g, ""))
                         itemUrl = data.payload.items[i].url_name;
                     }
                 }

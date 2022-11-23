@@ -21,14 +21,12 @@ Notifications.setNotificationHandler({
   });
 
 function changeWatchlist(newWatchlist) {
-    globalWatchlist = newWatchlist
-    //console.log("Global List: " + globalWatchlist)
+    globalWatchlist = newWatchlist;
 }
 
 TaskManager.defineTask('checkItemOffers', async () => {
-    var urlName = ""
     for (let item of globalWatchlist) {
-        urlName = item.queryStr
+        const urlName = item.queryStr;
         try {
             const res = await fetch('https://api.warframe.market/v1/items/' + urlName + '/orders', 
             {
@@ -36,7 +34,8 @@ TaskManager.defineTask('checkItemOffers', async () => {
             }
             );
             const json = await res.json();
-            //console.log(json)
+            setCurrItem(item)
+            setOrders(json)
             return json ? BackgroundFetch.BackgroundFetchResult.NewData : BackgroundFetch.BackgroundFetchResult.NoData;
         } catch (error) {
             return BackgroundFetch.BackgroundFetchResult.Failed;
@@ -70,9 +69,7 @@ function Watchlist({ navigation }) {
         //setNotification(notification);
         });
 
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-        console.log(response);
-        });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {console.log(response);});
 
         return () => {
         Notifications.removeNotificationSubscription(notificationListener.current);
@@ -107,7 +104,6 @@ function Watchlist({ navigation }) {
         return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log(token);
     } else {
         alert('Must use physical device for Push Notifications');
     }
@@ -155,9 +151,7 @@ function Watchlist({ navigation }) {
     }, [orderFound])
 
     useEffect(() => {
-        console.log('changed orderdata')
         for (let i = 0; i < ordersData.payload?.orders.length; i++) {
-            //console.log(ordersData?.payload?.orders[i].platinum)
             const currOrder = ordersData.payload?.orders[i];
             if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
                 setOrderFound(!orderFound);
@@ -178,7 +172,6 @@ function Watchlist({ navigation }) {
                 const json = await res.json();
                 setCurrItem(wtchlst[x])
                 setOrders(json)
-                //console.log('NEW ITEM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
             } catch (error) {
                 console.log(error)
             }
@@ -191,7 +184,6 @@ function Watchlist({ navigation }) {
         Alert.alert("Tracking has begun!", "Your items are now being tracked. NOTE: Your phone must be unlocked for tracking, and the app must only be running in the BACKGROUND. Good luck Tenno!", [
             {text: "Ok"}
         ])
-        console.log('task toggled')
     }, [])
 
     const resetStorage = () => {
