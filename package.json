@@ -25,7 +25,9 @@
     "expo-device": "^5.0.0",
     "expo-font": "~11.0.1",
     "expo-notifications": "^0.17.0",
+    "expo-splash-screen": "~0.17.5",
     "expo-status-bar": "~1.4.2",
+    "expo-updates": "^0.15.6",
     "material-icons-react": "^1.0.4",
     "qs": "^6.11.0",
     "qs-stringify": "^1.2.1",
@@ -42,8 +44,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.7",
     "react-navigation": "^4.4.4",
-    "react-navigation-stack": "^2.10.4",
-    "expo-splash-screen": "~0.17.5"
+    "react-navigation-stack": "^2.10.4"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3"
