@@ -19,14 +19,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rinzler7926.TennoTrader"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.rinzler7926.TennoTrader"
+      "package": "com.rinzler7926.TennoTrader",
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,5 +40,8 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     }
+  },
+  "react-native-google-mobile-ads": {
+     "ios_app_id": "ca-app-pub-4794441298662299~2958174592"
   }
 }

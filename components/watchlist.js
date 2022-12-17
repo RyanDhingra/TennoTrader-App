@@ -155,6 +155,7 @@ function Watchlist({ navigation }) {
             const currOrder = ordersData.payload?.orders[i];
             if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
                 setOrderFound(!orderFound);
+                console.log(currOrder)
             }
         }
     }, [ordersData])
@@ -162,7 +163,6 @@ function Watchlist({ navigation }) {
     const runTask = async () => {
         for (let x = 0; x < wtchlst.length; x++) {
             const urlName = wtchlst[x].queryStr;
-            const currName = wtchlst[x].itemName;
             try {
                 const res = await fetch('https://api.warframe.market/v1/items/' + urlName +'/orders', 
                 {
@@ -201,7 +201,7 @@ function Watchlist({ navigation }) {
                         My Watchlist
                     </Text>
                 </View>
-                <View height="50%" width="70%" style={styles.flatlist}>
+                <View height="40%" width="80%" style={styles.flatlist}>
                     <FlatList
                         backgroundColor='#66D0E8'
                         borderRadius='50'
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
         width: '100%',
-        bottom: 40,
+        bottom: 90,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -258,14 +258,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
         width: '100%',
-        bottom: 140,
+        bottom: 190,
         justifyContent: 'center',
         alignItems: 'center'
     },
     bottom: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        height: 40,
+        height: 90,
         width: '100%',
         bottom: 0,
     },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 40,
         width: '100%',
-        bottom: 240,
+        bottom: 290,
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     },

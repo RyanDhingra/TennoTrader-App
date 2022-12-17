@@ -214,7 +214,7 @@ function Search({ route, navigation }) {
                         onSubmitEditing={sortData}
                     />
                 </View>
-                <View height="65%" width="70%">
+                <View height="55%" width="70%">
                     <FlatList
                         backgroundColor={itemClicked ? 'rgba(102, 208, 232, 0.2)':'#66D0E8'}
                         borderRadius='50'
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 100,
         width: '100%',
-        bottom: 40,
+        bottom: 90,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     bottom: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        height: 40,
+        height: 90,
         width: '100%',
         bottom: 0,
     },
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 40,
         width: '100%',
-        bottom: 140,
+        bottom: 190,
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     },
