@@ -201,7 +201,7 @@ function Watchlist({ navigation }) {
                         My Watchlist
                     </Text>
                 </View>
-                <View height="40%" width="80%" style={styles.flatlist}>
+                <View height="50%" width="70%" style={styles.flatlist}>
                     <FlatList
                         backgroundColor='#66D0E8'
                         borderRadius='50'
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
         width: '100%',
-        bottom: 90,
+        bottom: 40,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -258,14 +258,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
         width: '100%',
-        bottom: 190,
+        bottom: 140,
         justifyContent: 'center',
         alignItems: 'center'
     },
     bottom: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        height: 90,
+        height: 40,
         width: '100%',
         bottom: 0,
     },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 40,
         width: '100%',
-        bottom: 290,
+        bottom: 240,
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     },
