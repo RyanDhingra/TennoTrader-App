@@ -20,5 +20,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-"this brown fox jumps over the (wall)"
