@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import bg from '../assets/WFwallpaper.jpg'
+import bg from '../assets/WFbg.jpg'
 import ArrowLeft from '../assets/ArrowLeft.png';
 import ArrowRight from '../assets/ArrowRight.png';
 import { FlatList, StyleSheet, ImageBackground, SafeAreaView, Text, Alert, TouchableOpacity, View, Image, TextInput } from 'react-native';
@@ -203,12 +203,12 @@ function Search({ route, navigation }) {
         <ImageBackground source={bg} style={styles.bg}>
             <SafeAreaView alignItems='center' width='100%' height='100%' style={itemClicked ? {backgroundColor: 'rgba(0, 0, 0, 0.5)'}:null}>
                 <View style={styles.searchBar}>
-                    <SearchBar 
+                    <SearchBar
                         value={searchTerm}
                         onChangeText={updateSearch}
                         placeholder="Search items here"
                         inputContainerStyle={{backgroundColor: 'rgba(0, 0, 0, 0)', color:'white'}}
-                        containerStyle={itemClicked ? {backgroundColor: 'rgba(102, 208, 232, 0.2)', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}:{backgroundColor: '#66D0E8', borderWidth: 1, borderRadius: 100, width: '350%', color:'white', marginBottom: 50}}
+                        containerStyle={itemClicked ? {backgroundColor: 'rgba(102, 208, 232, 0.2)', borderWidth: 1, borderRadius: 100, width: '85%', color:'white', marginBottom: 50}:{backgroundColor: '#66D0E8', width: '85%', borderWidth: 1, borderRadius: 100, color:'white', marginBottom: 50}}
                         inputStyle={itemClicked ? {color: 'rgba(255, 255, 255, 0.2)', margin: 0, fontSize: 25, fontFamily: 'WFfont'}:{color: 'white', margin: 0, color:'white', fontSize: 25, fontFamily: 'WFfont'}}
                         searchIcon={itemClicked ? {color:'rgba(255, 255, 255, 0.2)', size: 30}:{color:'white', size: 30}}
                         clearIcon={itemClicked ? {color:'rgba(255, 255, 255, 0.2)', size: 30}:{color:'white', size: 30}}
@@ -216,7 +216,7 @@ function Search({ route, navigation }) {
                         onSubmitEditing={sortData}
                     />
                 </View>
-                <View height="65%" width="70%">
+                <View height="50%" width="70%">
                     <FlatList
                         backgroundColor={itemClicked ? 'rgba(102, 208, 232, 0.2)':'#66D0E8'}
                         borderRadius='50'
@@ -242,6 +242,11 @@ function Search({ route, navigation }) {
             <TouchableOpacity onPress={() => navigation.navigate('Watchlist')} style={styles.watchlist}>
                     <Text style={itemClicked ? styles.buttonTextBlurr:styles.buttonText}>
                         Start Watching
+                    </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Homepage')} style={styles.back}>
+                    <Text style={itemClicked ? styles.buttonTextBlurr:styles.buttonText}>
+                        Back To Home
                     </Text>
             </TouchableOpacity>
             <View style={styles.bottom}></View>
@@ -291,12 +296,21 @@ const styles = StyleSheet.create({
     },
     watchlist: {
         position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, .5)',
+        height: 100,
+        width: '100%',
+        bottom: 140,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    back: {
+        position: 'absolute',
+        backgroundColor: 'rgba(0, 0, 0, .5)',
         height: 100,
         width: '100%',
         bottom: 40,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     buttonText: {
         position: 'relative',
@@ -311,7 +325,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
     },
     searchBar: {
-        width: 100,
+        width: '100%',
         top: 50,
         justifyContent: 'center',
         alignItems: 'center',
@@ -359,7 +373,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: 40,
         width: '100%',
-        bottom: 140,
+        bottom: 240,
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100
     },
@@ -374,5 +388,5 @@ const styles = StyleSheet.create({
         borderColor: '#000000',
         borderWidth: 1,
         borderRadius: 25,
-    }
+    },
 })

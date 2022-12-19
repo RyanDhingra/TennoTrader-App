@@ -1,7 +1,7 @@
 import React from 'react';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
-import bg from '../assets/WFwallpaper.jpg'
+import bg from '../assets/WFbg.jpg'
 import { useEffect } from 'react';
 import { StyleSheet, Alert, SafeAreaView, FlatList, ImageBackground, View, TouchableOpacity, Text, AsyncStorage } from 'react-native';
 import { useState, useRef } from 'react';
@@ -164,13 +164,10 @@ function Watchlist({ navigation }) {
                 const currOrder = ordersData.payload?.orders[i];
                 if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
                     setOrderFound(!orderFound);
-                    console.log(currOrder)
-                    console.log(currItem)
                     sellers.push(currOrder.user.ingame_name)
                 }
             }
             currItem.seller = sellers;
-            console.log(currItem.seller)
         }
     }, [ordersData])
     
@@ -215,7 +212,7 @@ function Watchlist({ navigation }) {
                         My Watchlist
                     </Text>
                 </View>
-                <View height="50%" width="70%" style={styles.flatlist}>
+                <View height="45%" width="70%" style={styles.flatlist}>
                     <FlatList
                         backgroundColor='#66D0E8'
                         borderRadius='50'
