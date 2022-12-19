@@ -162,7 +162,7 @@ function Watchlist({ navigation }) {
             let sellers = []
             for (let i = 0; i < ordersData.payload?.orders.length; i++) {
                 const currOrder = ordersData.payload?.orders[i];
-                if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
+                if ((currOrder.platinum <= currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
                     setOrderFound(!orderFound);
                     sellers.push(currOrder.user.ingame_name)
                 }
