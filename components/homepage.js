@@ -50,7 +50,7 @@ function Homepage({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => sendMail()} style={styles.bugs}>
                         <Text style={styles.buttonText}>
-                            Report Bugs
+                            Feedback
                         </Text>
                 </TouchableOpacity>
             </View>
