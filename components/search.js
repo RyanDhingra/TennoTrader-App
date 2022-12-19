@@ -153,12 +153,14 @@ function Search({ route, navigation }) {
                         itemName: item,
                         itemPrice: plat,
                         queryStr: itemUrl,
+                        seller: [],
                     }
                 } else {
                     itemInfo = {
                         itemName: item,
                         itemPrice: 1,
                         queryStr: itemUrl,
+                        seller: [],
                     }
                 }
                 newWatchlist.push(itemInfo)
@@ -244,27 +246,27 @@ function Search({ route, navigation }) {
             </TouchableOpacity>
             <View style={styles.bottom}></View>
             <View style={itemClicked ? styles.popup: null}>
-                <Text style={{fontSize: 25, color: 'white', marginBottom: 10,}}>
-                    Set Watch Price:
+                <Text style={{fontSize: 25, color: 'white', marginBottom: 10, marginTop: 5, fontFamily: 'WFfont',}}>
+                    Set Watch Price
                 </Text>
                 <View style={{display: 'flex', flexDirection: 'row', marginBottom: 15}}>
                     <TouchableOpacity onPress={() => decPlat()}>
                         <Image source={ArrowLeft} style={{width: 30, height: 30}}/>
                     </TouchableOpacity>
-                    <TextInput keyboardType='numeric' placeholder='1' placeholderTextColor='white' onChangeText={num => changePlat(num)} maxLength={4} style={{width: 150, textAlign: 'center', color: 'white', fontSize: 25,}} >
+                    <TextInput keyboardType='numeric' placeholder='1' placeholderTextColor='white' onChangeText={num => changePlat(num)} maxLength={4} style={{fontFamily: 'WFfont', width: 150, textAlign: 'center', color: 'white', fontSize: 30,}} >
                         {(plat > 1) ? plat: ""}
                     </TextInput>
                     <TouchableOpacity onPress={() => incPlat()}>
                         <Image source={ArrowRight} style={{width: 30, height: 30}}/>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={() => addToWatchlist()} style={{borderBottomColor: 'black', borderBottomWidth: 1, borderTopColor: 'black', borderTopWidth: 1, width: '100%', alignItems: 'center'}}>
-                    <Text style={{fontSize: 25, color: 'white'}}>
+                <TouchableOpacity onPress={() => addToWatchlist()} style={{borderTopColor: 'black', borderTopWidth: 1, width: '100%', alignItems: 'center'}}>
+                    <Text style={{fontSize: 25, color: 'white', fontFamily: 'WFfont', padding: 8}}>
                         Add To Watchlist
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => cancel()}>
-                    <Text style={{fontSize: 25, color: 'white'}}>
+                <TouchableOpacity onPress={() => cancel()} style={{borderTopColor: 'black', borderTopWidth: 1, width: '100%', alignItems: 'center'}}>
+                    <Text style={{fontSize: 25, color: 'white', fontFamily: 'WFfont', paddingTop: 8}}>
                         Cancel
                     </Text>
                 </TouchableOpacity>
@@ -333,13 +335,11 @@ const styles = StyleSheet.create({
         borderColor: 'black',
     },
     name: {
-        fontFamily: 'Verdana',
         fontSize: 20,
         color: 'white',
         fontFamily: 'WFfont',
     },
     nameBlurr: {
-        fontFamily: 'Verdana',
         fontSize: 20,
         color: 'rgba(255, 255, 255, 0.2)',
         fontFamily: 'WFfont',

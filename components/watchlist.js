@@ -9,7 +9,6 @@ import { getCookie } from '../components/search'
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 
-
 var globalWatchlist = []
 
 Notifications.setNotificationHandler({
@@ -57,16 +56,21 @@ function Watchlist({ navigation }) {
     const [wtchlst, setWatchlist] = useState([]);
     const [ordersData, setOrders] = useState({});
     const [currItem, setCurrItem] = useState(null);
-    const [usernames, setUsernames] = useState(null);
     const [orderFound, setOrderFound] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
+    const [viewSellersItem, setViewSellersItem] = useState(null);
+    const [clicked, setClicked] = useState(false);
+
+    const setSellers = (newItem) => {
+        setViewSellersItem(newItem);
+        setClicked(true);
+    }
 
     useEffect(() => {
-        registerForPushNotificationsAsync();//.then(token => setExpoPushToken(token));
+        registerForPushNotificationsAsync();
 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-        //setNotification(notification);
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {console.log(response);});
@@ -151,12 +155,19 @@ function Watchlist({ navigation }) {
     }, [orderFound])
 
     useEffect(() => {
-        for (let i = 0; i < ordersData.payload?.orders.length; i++) {
-            const currOrder = ordersData.payload?.orders[i];
-            if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
-                setOrderFound(!orderFound);
-                console.log(currOrder)
+        if (currItem) {
+            let sellers = []
+            for (let i = 0; i < ordersData.payload?.orders.length; i++) {
+                const currOrder = ordersData.payload?.orders[i];
+                if ((currOrder.platinum === currItem.itemPrice) && (currOrder.user.status === "ingame") && (currOrder.order_type === "sell")) {
+                    setOrderFound(!orderFound);
+                    console.log(currOrder)
+                    console.log(currItem)
+                    sellers.push(currOrder.user.ingame_name)
+                }
             }
+            currItem.seller = sellers;
+            console.log(currItem.seller)
         }
     }, [ordersData])
     
@@ -205,15 +216,19 @@ function Watchlist({ navigation }) {
                     <FlatList
                         backgroundColor='#66D0E8'
                         borderRadius='50'
+                        style={styles.innerFlatlist}
                         borderWidth='1'
+                        contentContainerStyle={{paddingBottom: '100%'}}
                         borderColor='black'
                         data={wtchlst}
                         showsVerticalScrollIndicator={false}
                         renderItem={({item}) =>
                         <View style={styles.flatview}>
-                            <Text style={styles.name}>{item.itemName}</Text>
-                            <Text style={styles.name}>{item.itemPrice}</Text>
-                            <Text style={styles.name}>{item.queryStr}</Text>
+                            <TouchableOpacity disabled={(item.seller.length != 0) ? false:true} onPress={() => setSellers(item)}>
+                                <Text style={styles.name}>{(item.itemName).substring(0, (item.itemName).length - 1)}</Text>
+                                <Text style={styles.price}>{item.itemPrice + " P"}</Text>
+                                <Text style={(item.seller.length != 0) ? styles.orderFound: styles.noOrder}>{(item.seller.length != 0) ? "Click to view sellers":"No orders found"}</Text>
+                            </TouchableOpacity>
                         </View>
                         }
                         keyExtractor={item => item.itemName}
@@ -234,6 +249,18 @@ function Watchlist({ navigation }) {
                         </Text>
                 </TouchableOpacity>
             <View style={styles.bottom}></View>
+            <View style={clicked ? styles.popup: null}>
+                <FlatList
+                    data={viewSellersItem?.seller}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({item}) =>
+                    <View>
+                        <Text style={styles.seller}>{item}</Text>
+                    </View>
+                    }
+                    keyExtractor={item => viewSellersItem?.seller.indexOf(item)}
+                />
+            </View>
         </ImageBackground>
         
     );
@@ -285,17 +312,51 @@ const styles = StyleSheet.create({
         fontSize: 40,
     },
     flatview: {
-        justifyContent: 'center',
         borderRadius: 0,
+        borderBottomWidth: 1,
+        borderColor: 'black',
         paddingTop: 5,
-        paddingLeft: 25,
-        paddingRight: 25,
-        alignItems: "center",
     },
     name: {
-        fontFamily: 'Verdana',
-        fontSize: 18,
-        color: 'white'
+        fontFamily: 'WFfont',
+        fontSize: 20,
+        color: 'white',
+        textAlign: 'center'
+    },
+    seller: {
+        fontFamily: 'WFfont',
+        fontSize: 25,
+        color: 'white',
+        textAlign: 'center'
+    },
+    price: {
+        fontFamily: 'WFfont',
+        fontSize: 30,
+        color: 'white',
+        textAlign: 'center',
+        marginTop: 10
+    },
+    orderFound: {
+        fontFamily: 'WFfont',
+        fontSize: 20,
+        color: 'white',
+        textAlign: 'center',
+        backgroundColor: 'green',
+        margin: 10,
+        padding: 15,
+        borderRadius: 15,
+        overflow: 'hidden'
+    },
+    noOrder: {
+        fontFamily: 'WFfont',
+        fontSize: 20,
+        color: 'white',
+        textAlign: 'center',
+        backgroundColor: 'red',
+        margin: 10,
+        padding: 15,
+        borderRadius: 15,
+        overflow: 'hidden'
     },
     logo: {
         color: 'black',
@@ -306,6 +367,21 @@ const styles = StyleSheet.create({
     },
     flatlist: {
         top: 100,
+    },
+    innerFlatlist: {
+        paddingTop: 20,
+    },
+    popup: {
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        top: '40%',
+        width: 300,
+        height: 150,
+        backgroundColor: '#66D0E8',
+        borderColor: '#000000',
+        borderWidth: 1,
+        borderRadius: 25,
     }
 })
 
