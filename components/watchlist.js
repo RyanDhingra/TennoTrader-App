@@ -59,12 +59,15 @@ function Watchlist({ navigation }) {
     const [orderFound, setOrderFound] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
-    const [viewSellersItem, setViewSellersItem] = useState(null);
-    const [clicked, setClicked] = useState(false);
 
     const setSellers = (newItem) => {
-        setViewSellersItem(newItem);
-        setClicked(true);
+        sellerString = "";
+        for (let x = 0; x < newItem.seller.length; x++) {
+            sellerString += newItem.seller[x] + ", "
+        }
+        Alert.alert("Sellers:", sellerString, [
+            {text: "Ok"}
+        ])
     }
 
     useEffect(() => {
@@ -192,9 +195,9 @@ function Watchlist({ navigation }) {
     useEffect(() => {
         getCookie().then(req => setWatchlist(JSON.parse(req)))
         toggleFetchTask()
-        Alert.alert("Tracking has begun!", "Your items are now being tracked. NOTE: Your phone must be unlocked for tracking, and the app must only be running in the BACKGROUND. Good luck Tenno!", [
+        Alert.alert("Tracking has begun!", "Keep the watchlist open for tracking every minute, or leave the watchlist open in the background for tracking every 15 minutes.", [
             {text: "Ok"}
-        ])
+        ]) 
     }, [])
 
     const resetStorage = () => {
@@ -249,18 +252,6 @@ function Watchlist({ navigation }) {
                         </Text>
                 </TouchableOpacity>
             <View style={styles.bottom}></View>
-            <View style={clicked ? styles.popup: null}>
-                <FlatList
-                    data={viewSellersItem?.seller}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({item}) =>
-                    <View>
-                        <Text style={styles.seller}>{item}</Text>
-                    </View>
-                    }
-                    keyExtractor={item => viewSellersItem?.seller.indexOf(item)}
-                />
-            </View>
         </ImageBackground>
         
     );
@@ -323,12 +314,6 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center'
     },
-    seller: {
-        fontFamily: 'WFfont',
-        fontSize: 25,
-        color: 'white',
-        textAlign: 'center'
-    },
     price: {
         fontFamily: 'WFfont',
         fontSize: 30,
@@ -370,18 +355,6 @@ const styles = StyleSheet.create({
     },
     innerFlatlist: {
         paddingTop: 20,
-    },
-    popup: {
-        position: 'absolute',
-        display: 'flex',
-        alignItems: 'center',
-        top: '40%',
-        width: 300,
-        height: 150,
-        backgroundColor: '#66D0E8',
-        borderColor: '#000000',
-        borderWidth: 1,
-        borderRadius: 25,
     }
 })
 
